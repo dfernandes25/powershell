@@ -4,6 +4,7 @@
     
     .DESCRIPTION
     nothing fancy here except using native commands, (no external modules) to do an ftp server upload
+    and if you think ftp uploads in ps are easy, give it a whirl -- lemme know how it goes
  
     .EXAMPLE
      
