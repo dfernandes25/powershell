@@ -1,4 +1,27 @@
-
+<#
+    .SYNOPSIS
+    upload chocolatey log files to an ftp server
+    
+    .DESCRIPTION
+    nothing fancy here except using native commands, (no external modules) to do an ftp server upload
+ 
+    .EXAMPLE
+     
+    .LINK
+    
+    .NOTES
+     Don Fernandes
+     don@cbctech.net
+     cbc technologies llc
+     created:
+     update: 20221008 refactored 
+     
+    .INPUTS
+    List of input types that are accepted by this function
+    
+    .OUTPUTS
+    List of output types produced by this function
+#>
 
 
 #----------------------------------------------
@@ -14,8 +37,6 @@ $script:csvdir = "$invdir\csv"
 $script:rptdir = "$scrdir\reports"
 $script:logdir = "$env:HOMEDRIVE\scriptlogs"
 $script:logname = "$cname-myInventory.log"
-# $ci = Get-ComputerInfo
-
 $chocosrcdir = 'C:\ProgramData\chocolatey\logs'
 
 #----------------------------------------------
