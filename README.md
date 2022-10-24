@@ -1,4 +1,5 @@
 # powershell
-Most of my coding work is done for clients under NDA, but here's some tried and true generic scripts
-There are some interesting techniques used, hope you find the scripts helpful, they all solve a specific need/problem!
-These scripts aren't fully documented, probably not for rookies or script kiddies who simply copy/paste, use at your own risk!
+Most of my coding work is for clients under NDA agreements, but in the spirit of sharing here are some tried and true generic scripts.
+There are some interesting techniques used, maybe not the most elegant or efficient and that's fine. Optimize until the cows come home. 
+Scripts aren't fully documented, probably not the best guidance for rookies, copy/paste script kiddies, or StackOverflow disciples.
+Use at your own risk!
