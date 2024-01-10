@@ -4,7 +4,7 @@
     Don Fernandes
     CBC Technologies
     Created:  20210903
-    Modified: 20221023
+    Modified: 2022102
 
     .SYNOPSIS
     Creates html report with various system parameters
@@ -690,11 +690,10 @@ function Send-FTP {
     $uri = New-Object -TypeName System.Uri -ArgumentList ($ftp + $item.Name) 
     $webclient.UploadFile($uri, $item.FullName) 
   }
-} Send-FTP
+} 
+# Send-FTP
 
 Write-EventLog -LogName Application -Source 'cbctech' -Message 'myHtmlInventory complete' -EventId 4444 -EntryType information
-
-
 
 
 <# NEED TO ADD
