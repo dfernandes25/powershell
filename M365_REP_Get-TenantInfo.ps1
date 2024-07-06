@@ -21,7 +21,7 @@
 #>
 
 <# variables #>
-$dirdata = 'C:\Scripts\m365Tenant'
+$dirdata = "~/Desktop/dev/m365Pros"
 $spurl = 'https://cbctechnologies-admin.sharepoint.com'
 $credentials = Get-Credential
 
