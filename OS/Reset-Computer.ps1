@@ -1,4 +1,5 @@
-﻿<#
+﻿#requires -Version 2.0 -Modules CimCmdlets
+<#
     .SYNOPSIS
     Reset computer to factory settings
  
@@ -13,6 +14,7 @@
     don fernandes
     cbc technologies llc
     oct 25, 2022
+    20240706 modified
  
     .LINK
     https://techcommunity.microsoft.com/t5/windows-deployment/factory-reset-windows-10-without-user-intervention/m-p/1348679

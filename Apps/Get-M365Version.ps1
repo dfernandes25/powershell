@@ -14,9 +14,10 @@
     Don Fernandes
     don@cbctech.net
     20240110 created
+    20240706 modified
 
 #>
 
 Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' |
 Select-Object -ExpandProperty VersionToReport |
-Out-File -FilePath 'C:\tech_stuff\office_version.txt' -Force
+Out-File -FilePath "$env:HOMEDRIVE\tech_stuff\office_version.txt" -Force
