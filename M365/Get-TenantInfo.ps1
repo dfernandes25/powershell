@@ -17,45 +17,49 @@
     Don Fernandes
     don@cbctech.net
     20240110 created
+    20240706 modified
 
 #>
 
 <# variables #>
-$dirdata = "~/Desktop/dev/m365Pros"
-$spurl = 'https://cbctechnologies-admin.sharepoint.com'
+$dirdata = 'C:\scripts\m365Pros'
+#$spurl = 'https://xxxxx-admin.sharepoint.com'
 $credentials = Get-Credential
 
 <# directory check and delete old data #>
-if(!(Test-Path $dirdata)){mkdir $dirdata}
-Get-ChildItem $dirdata | Remove-Item -Force
+if(!(Test-Path -Path $dirdata))
+{
+  mkdir -Path $dirdata
+}
+Get-ChildItem -Path $dirdata | Remove-Item -Force
 
 <# m365 modules - compatibility for PSv7 #>
-Import-Module AzureAD -UseWindowsPowerShell
-Import-Module Microsoft.Online.Sharepoint.Powershell -UseWindowsPowerShell
-Import-Module MSOnline -UseWindowsPowerShell
+Import-Module -Name AzureAD
+#Import-Module Microsoft.Online.Sharepoint.Powershell
+Import-Module -Name MSOnline
 
 <# connect to services #>
 Connect-ExchangeOnline -Credential $credentials
 Connect-AzureAD -Credential $credentials
-Connect-SPOService -Url $spurl -Credential $credentials
+#Connect-SPOService -Url $spurl -Credential $credentials
 Connect-MsolService -Credential $credentials
 
 <# exchange online mailbox info #>
-Get-EXOCasMailbox | Export-Csv -Path "$dirdata\CAS-MailboxInfo.csv" -NoTypeInformation -Force
-Get-EXOMailbox    | Export-Csv -Path "$dirdata\EXO-MailboxInfo.csv" -NoTypeInformation -Force
+Get-EXOCasMailbox | Export-Csv -Path ('{0}\CAS-MailboxInfo.csv' -f $dirdata) -NoTypeInformation -Force
+Get-EXOMailbox    | Export-Csv -Path ('{0}\EXO-MailboxInfo.csv' -f $dirdata) -NoTypeInformation -Force
  
 <# msol info #>  
-  Get-MsolCompanyInformation |
-  Select-Object -Property * |
-  Export-Csv -Path $dirdata\MSOL-Company-Info.csv -Force -NoTypeInformation
+Get-MsolCompanyInformation |
+Select-Object -Property * |
+Export-Csv -Path $dirdata\MSOL-Company-Info.csv -Force -NoTypeInformation
 
-  Get-MsolAccountSku  |
-  Select-Object -Property 'AccountSkuId', 'ActiveUnits', 'ConsumedUnits' |
-  Export-Csv -Path $dirdata\MSOL-AccountSKU.csv -Force -NoTypeInformation
+Get-MsolAccountSku  |
+Select-Object -Property 'AccountSkuId', 'ActiveUnits', 'ConsumedUnits' |
+Export-Csv -Path $dirdata\MSOL-AccountSKU.csv -Force -NoTypeInformation
 
 <# AAD info #>
 # tenant details #
-Get-AzureADTenantDetail | Export-Csv -Path "$dirdata\AAD-Tenant.csv" -Force -NoTypeInformation
+Get-AzureADTenantDetail | Export-Csv -Path ('{0}\AAD-Tenant.csv' -f $dirdata) -Force -NoTypeInformation
 # user details #
 function Get-AADUser
 {
@@ -69,7 +73,7 @@ function Get-AADUser
       mail    = $_.Mail
     }
   } |
-  Export-Csv -Path "$dirdata\AAD-Users.csv" -Force -NoTypeInformation
+  Export-Csv -Path ('{0}\AAD-Users.csv' -f $dirdata) -Force -NoTypeInformation
 } 
 Get-AADUser
 
@@ -95,7 +99,7 @@ function Get-AADGroups
       deleted     = $group.DeletionTimestamp    
       owner       = $owners
       description = $group.Description
-    } | Export-Csv -Path "$dirdata\AAD-Groups.csv" -Append -NoTypeInformation
+    } | Export-Csv -Path ('{0}\AAD-Groups.csv' -f $dirdata) -Append -NoTypeInformation
   }
 } 
 Get-AADGroups
@@ -113,7 +117,7 @@ function Get-AADDomains
       verified = $_.IsVerified
       root     = $_.IsRoot
       services = ($_.supportedservices -join ',')
-    }       | Export-Csv -Path "$dirdata\AAD-Domains.csv" -NoTypeInformation -Append
+    }       | Export-Csv -Path ('{0}\AAD-Domains.csv' -f $dirdata) -NoTypeInformation -Append
   }
 }
 Get-AADDomains
@@ -135,7 +139,7 @@ function Get-AADRoles
       [PSCustomObject]@{
         role = $role.DisplayName
         name = $names
-      } | Export-Csv -Path "$dirdata\AAD-Roles.csv" -NoTypeInformation -Append
+      } | Export-Csv -Path ('{0}\AAD-Roles.csv' -f $dirdata) -NoTypeInformation -Append
     }
   }
 }
@@ -146,7 +150,7 @@ function Get-AADApps
 {
   Get-AzureADApplication |
   Select-Object -Property 'DisplayName' |
-  Export-Csv -Path "$dirdata\AAD-Apps.csv" -NoTypeInformation -Append
+  Export-Csv -Path ('{0}\AAD-Apps.csv' -f $dirdata) -NoTypeInformation -Append
 } 
 Get-AADApps
  
@@ -155,27 +159,27 @@ function Get-AADContacts
 {     
   Get-AzureADContact |
   Select-Object -Property 'DisplayName', 'Mail' |
-  Export-Csv -Path "$dirdata\AAD-Contacts.csv" -NoTypeInformation -Append
+  Export-Csv -Path ('{0}\AAD-Contacts.csv' -f $dirdata) -NoTypeInformation -Append
 }
 Get-AADContacts
 
 <# Sharepoint #>
 # site collections #
-$Sites = Get-SPOSite -Limit ALL
+<# $Sites = Get-SPOSite -Limit ALL
  
-# get site owners for each collection #
-# need to add some error handling for sites with no owner #
-$SiteOwners = @()
-$Sites | ForEach-Object {
-    If($_.Template -like 'GROUP*')
+    # get site owners for each collection #
+    # need to add some error handling for sites with no owner #
+    $SiteOwners = @()
+    $Sites | ForEach-Object {
+    If($_.Template -like 'GROUP*')  
     {
-        $Site = Get-SPOSite -Identity $_.URL
-        #Get Group Owners
-        $GroupOwners = (Get-AzureADGroupOwner -ObjectId $Site.GroupID | Select-Object -ExpandProperty UserPrincipalName) -join "; "      
+    $Site = Get-SPOSite -Identity $_.URL
+    #Get Group Owners
+    $GroupOwners = (Get-AzureADGroupOwner -ObjectId $Site.GroupID | Select-Object -ExpandProperty UserPrincipalName) -join "; "      
     }
     Else
     {
-        $GroupOwners = $_.Owner
+    $GroupOwners = $_.Owner 
     }
     #Collect Data
     $SiteOwners += New-Object PSObject -Property @{
@@ -183,22 +187,22 @@ $Sites | ForEach-Object {
     'URL' = $_.Url
     'Owner(s)' = $GroupOwners
     }
-}
-$SiteOwners | Export-Csv -Path "$dirdata\SP-SiteOwners.csv" -NoTypeInformation -Force
+    }
+    $SiteOwners | Export-Csv -Path "$dirdata\SP-SiteOwners.csv" -NoTypeInformation -Force
  
-# get members of each collection #
-# need to add error handling for sites with no members #
-$SiteMembers = @()
-$Sites | ForEach-Object {
+    # get members of each collection #
+    # need to add error handling for sites with no members #
+    $SiteMembers = @()
+    $Sites | ForEach-Object {
     If($_.Template -like 'GROUP*')
     {
-        $Site = Get-SPOSite -Identity $_.URL
-        #Get Group Owners
-        $GroupMembers = (Get-AzureADGroupMember -ObjectId $Site.GroupID | Select-Object -ExpandProperty UserPrincipalName) -join "; "      
+    $Site = Get-SPOSite -Identity $_.URL
+    #Get Group Owners
+    $GroupMembers = (Get-AzureADGroupMember -ObjectId $Site.GroupID | Select-Object -ExpandProperty UserPrincipalName) -join "; "      
     }
     Else
     {
-        $GroupMembers = $_.Member
+    $GroupMembers = $_.Member
     }
     #Collect Data
     $SiteMembers += New-Object PSObject -Property @{
@@ -206,14 +210,16 @@ $Sites | ForEach-Object {
     'URL' = $_.Url
     'Member(s)' = $GroupMembers
     }
-}
-$SiteMembers | Export-Csv -Path "$dirdata\SP-SiteMembers.csv" -NoTypeInformation -Append
+    }
+    $SiteMembers | Export-Csv -Path "$dirdata\SP-SiteMembers.csv" -NoTypeInformation -Append
+
+#>
 
 function New-AuditReport
 {
   #$dirdata = "$dirData"
-  $fileout = 'CBC-M365-TENANT-OVERVIEW.xlsx'
-  $outpath = Join-Path -Path $dirData -ChildPath $fileout
+  $fileout = 'M365-TENANT-OVERVIEW.xlsx'
+  $outpath = Join-Path -Path $dirdata -ChildPath $fileout
   if($outpath)
   {
     Remove-Item -Path $outpath -Force -ErrorAction SilentlyContinue
@@ -227,7 +233,7 @@ function New-AuditReport
   ForEach-Object -Process {
     $sheetname = $_.basename
     Import-Csv -Path $_.fullname  | 
-    Export-Excel -Path ('{0}' -f $outpath) -AutoSize -AutoFilter -FreezeTopRow -WorksheetName $sheetname -Title 'CBC M365 TENANT OVERVIEW'
+    Export-Excel -Path ('{0}' -f $outpath) -AutoSize -AutoFilter -FreezeTopRow -WorksheetName $sheetname -Title 'M365 TENANT OVERVIEW'
   }
 }
 New-AuditReport 
