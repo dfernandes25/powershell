@@ -39,8 +39,8 @@ This script uses the PSWindowsUpdate module to install the latest cumulative upd
 
 [CmdletBinding()]
 Param(
-    [Parameter(Mandatory = $False)] [ValidateSet('Soft', 'Hard', 'None', 'Delayed')] [String] $Reboot = 'Soft',
-    [Parameter(Mandatory = $False)] [Int32] $RebootTimeout = 120
+     [ValidateSet('Soft', 'Hard', 'None', 'Delayed')] [String] $Reboot = 'Soft',
+     [int] $RebootTimeout = 120
 )
 
 Process
