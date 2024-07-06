@@ -21,8 +21,8 @@
 #>
 
 <# variables #>
-$dirdata = 'C:\Scripts\xxx'
-$spurl = 'https://xxxxxx-admin.sharepoint.com'
+$dirdata = 'C:\Scripts\m365Tenant'
+$spurl = 'https://cbctechnologies-admin.sharepoint.com'
 $credentials = Get-Credential
 
 <# directory check and delete old data #>
